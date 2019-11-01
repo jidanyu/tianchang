@@ -3,8 +3,8 @@ import random
 from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
-from bluelog import db
-from bluelog.models import Admin, Category, Post, Comment, Link
+from tianchang import db
+from tianchang.models import Admin, Category, Post, Comment
 
 
 def fake_admin():
@@ -14,7 +14,7 @@ def fake_admin():
         blog_sub_title='fu biaoti',
         name='jidanyu',
         about='这是关于文字')
-    admin.set_password('helloflask')
+    # admin.set_password('helloflask')
     db.session.add(admin)
     db.session.commit()
 

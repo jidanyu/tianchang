@@ -6,7 +6,7 @@ from tianchang.blueprints.admin import admin_bp
 from flask import Flask, render_template
 from tianchang.settings import config
 from tianchang.extensions import bootstrap, db, moment, ckeditor, mail
-from bluelog.models import Admin, Post, Category, Comment, Link
+from tianchang.models import Admin, Post, Category, Comment
 
 
 def create_app(config_name=None):
@@ -89,4 +89,3 @@ def register_commands(app):
         fake_comments()
 
         click.echo('Done')
-        我是季丹玉
