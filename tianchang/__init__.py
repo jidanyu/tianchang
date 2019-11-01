@@ -89,3 +89,4 @@ def register_commands(app):
         fake_comments()
 
         click.echo('Done')
+        我是季丹玉
