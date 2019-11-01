@@ -1,0 +1,2 @@
+FLASK_APP=tianchang
+FLASK_ENV=development
