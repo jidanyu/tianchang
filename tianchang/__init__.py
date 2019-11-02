@@ -22,7 +22,7 @@ def create_app(config_name=None):
     register_commands(app)  # 注册自定义shell命令
     # register_errors(app)  # 注册错误处理函数
     register_shell_context(app)  # 注册shell上下文处理函数
-    # register_template_context(app)  # 注册模板上下文处理函数
+    register_template_context(app)  # 注册模板上下文处理函数
     return app
 
 
@@ -50,8 +50,12 @@ def register_shell_context(app):
         return dict(db=db, Admin=Admin, Post=Post, Category=Category, Comment=Comment)
 
 
-# def register_template_context(app):
-#     pass
+def register_template_context(app):
+    @app.context_processor
+    def make_template_context():
+        admin = Admin.query.first()
+        categories = Category.query.order_by(Category.name).all()
+        return dict(admin=admin, categories=categories)
 
 
 # def register_errors(app):

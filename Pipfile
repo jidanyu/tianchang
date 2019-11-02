@@ -17,6 +17,7 @@ flask-ckeditor = "*"
 flask-moment = "*"
 flask-wtf = "*"
 faker = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.7"
