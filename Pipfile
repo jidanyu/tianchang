@@ -18,6 +18,7 @@ flask-moment = "*"
 flask-wtf = "*"
 faker = "*"
 flask-login = "*"
+unidecode = "*"
 
 [requires]
 python_version = "3.7"

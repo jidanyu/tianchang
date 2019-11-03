@@ -6,20 +6,19 @@ from sqlalchemy.exc import IntegrityError
 from tianchang import db
 from tianchang.models import Admin, Category, Post, Comment
 
+fake = Faker("zh_CN")
+
 
 def fake_admin():
     admin = Admin(
         username='admin',
-        blog_title='Bluelog',
-        blog_sub_title='fu biaoti',
-        name='jidanyu',
-        about='这是关于文字')
+        blog_title='季丹玉的博客',
+        blog_sub_title='flask学习示例',
+        name='季丹玉',
+        about=fake.sentence())
     # admin.set_password('helloflask')
     db.session.add(admin)
     db.session.commit()
-
-
-fake = Faker()
 
 
 def fake_categories(count=10):

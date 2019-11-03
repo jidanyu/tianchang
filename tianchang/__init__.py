@@ -5,6 +5,7 @@ from tianchang.blueprints.blog import blog_bp
 from tianchang.blueprints.admin import admin_bp
 from flask import Flask, render_template
 from tianchang.settings import config
+from flask_login import current_user
 from tianchang.extensions import bootstrap, db, moment, ckeditor, mail
 from tianchang.models import Admin, Post, Category, Comment
 
