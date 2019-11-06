@@ -1,6 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, current_app, Blueprint, abort, make_response
-from flask_login import current_user
 
+
+from flask_login import login_user, logout_user, login_required, current_user
 # from tianchang.emails import send_new_comment_email, send_new_reply_email
 from tianchang.extensions import db
 from tianchang.forms import CommentForm, AdminCommentForm
@@ -40,11 +41,19 @@ def show_post(post_id):
     return render_template('blog/post.html', post=post, pagination=pagination, comments=comments)
 
 
+@blog_bp.route('/post/delete/<int:post_id>', methods=['POST'])
+def delete_post(post_id):
+    post = Post.query.get(post_id)
+    post.delete
+    return redirect(url_for('index'))
+
+
 @blog_bp.route('/category/<int:category_id>')
 def show_category(category_id):
     category = Category.query.get_or_404(category_id)
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['BLUELOG_POST_PER_PAGE']
-    pagination = Post.query.with_parent(category).order_by(Post.timestamp.desc()).paginate(page, per_page)
+    pagination = Post.query.with_parent(category).order_by(
+        Post.timestamp.desc()).paginate(page, per_page)
     posts = pagination.items
     return render_template('blog/category.html', category=category, pagination=pagination, posts=posts)
