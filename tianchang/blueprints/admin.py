@@ -93,10 +93,18 @@ def new_link():
     return '这是设置界面'
 
 
-@admin_bp.route('/commemt/set')
+@admin_bp.route('/set-commemt/<int:post_id>')
 @login_required
-def set_comment():
-    return '这是设置界面'
+def set_comment(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.can_comment:
+        post.can_comment = False
+        flash('已经设置不可评论', info)
+    else:
+        post.can_comment = True
+        flash('已经设置可以评论', info)
+    db.session.commit()
+    return redirect('.show_post', post_id=post_id)
 
 
 @admin_bp.route('/comment/manage')
