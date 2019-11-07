@@ -40,6 +40,7 @@ class Post(db.Model):
     category = db.relationship('Category', back_populates='posts')
     # comments = db.relationship('Comment', backref='post', cascade='all,delete-orphan')
     comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
+    can_comment = db.Column(db.Boolean, default=True)
 
 
 class Comment(db.Model):
