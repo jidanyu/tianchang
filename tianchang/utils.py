@@ -32,3 +32,11 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower(
            ) in current_app.config['BLUELOG_ALLOWED_IMAGE_EXTENSIONS']
+
+
+def send_new_reply_email(comment):
+    return 'asd'
+
+
+def send_new_email(comment):
+    return 'asd'

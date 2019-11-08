@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}评论管理{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>评论总数
+        <small class="text-muted">{{ pagination.total }}</small>
+        <!-- <span class="float-right"><a class="btn btn-primary btn-sm" -->
+                                     <!-- href="{{ url_for('.new_post') }}">新建文章</a></span> -->
+    </h1>
+</div>
+{% if comments %}
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>序号.</th>
+        <th>评论人</th>
+        <th>文章</th>
+        <th>时间</th>
+        <th>内容</th>
+        <th>是否管理员</th>
+        <th>审核结果</th>
+
+    </tr>
+    </thead>
+    {% for comment in comments %}
+    <tr>
+        <td>{{ loop.index + ((page - 1) * config.BLUELOG_MANAGE_POST_PER_PAGE) }}</td>
+        <td><a href="#">{{ comment.author }}</a></td>
+        <td><a href="{{ url_for('blog.show_post', post_id=comment.post.id) }}#{{comment.id}}">{{ comment.post.title }}</a></td>
+        <td>{{ moment(comment.timestamp).format('LL') }}</td>
+        <td>{{ comment.body }}</td>
+        <td>{% if comment.from_admin %}是{% else %}否{% endif %}</td>
+        <td>
+            <form class="inline" method="post"
+                  action="{{ url_for('.review_comment', comment_id=comment.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-warning btn-sm">
+                    {% if comment.reviewed %}不通过{% else %}通过{% endif %}
+                </button>
+            </form>
+
+            <form class="inline" method="post"
+                  action="{{ url_for('.delete_comment', comment_id=comment.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定删除吗?');">删除
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="page-footer">{{ render_pagination(pagination) }}</div>
+{% else %}
+<div class="tip"><h5>没有评论.</h5></div>
+{% endif %}
+{% endblock %}

@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 <div class="page-header">
@@ -33,7 +37,7 @@
             {% if comments %}
                 <ul class="list-group">
                     {% for comment in comments %}
-                        <li class="list-group-item list-group-item-action flex-column">
+                        <li class="list-group-item list-group-item-action flex-column" id="{{comment.id}}">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">
                                     <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}"
@@ -45,7 +49,7 @@
                                         {% endif %}
                                     </a>
                                     {% if comment.from_admin %}
-                                        <span class="badge badge-primary">Author</span>{% endif %}
+                                        <span class="badge badge-primary">管理员</span>{% endif %}
                                     {% if comment.replied %}<span class="badge badge-light">回复</span>{% endif %}
                                 </h5>
                                 <small data-toggle="tooltip" data-placement="top" data-delay="500"
@@ -80,6 +84,25 @@
                 <div class="tip"><h5>没有评论.</h5></div>
             {% endif %}
         </div>
+        {% if comments %}
+            {{ render_pagination(pagination, fragment='#comments') }}
+        {% endif %}
+        {% if request.args.get('reply') %}
+            <div class="alert alert-dark">
+                回复 <strong>{{ request.args.get('author') }}</strong>:
+                <a class="float-right" href="{{ url_for('.show_post', post_id=post.id) }}">取消</a>
+            </div>
+        {% endif %}
+        {% if post.can_comment %}
+          <div id="comment-form">
+              {{render_form(form, action=request.full_path)}}
+          </div>
+        {% else %}
+          <div class="tip">
+            <h5>现在不可评论</h5>
+          </div>
+        {% endif %}
+
     </div>
 
     <div class="col-sm-4 sidebar">

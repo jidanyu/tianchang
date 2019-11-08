@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from tianchang.extensions import db
 from tianchang.forms import CommentForm, AdminCommentForm
 from tianchang.models import Post, Category, Comment
-# from tianchang.utils import redirect_back
+from tianchang.utils import redirect_back, allowed_file, send_new_email, send_new_reply_email
 
 
 blog_bp = Blueprint('blog', __name__, static_folder='static', static_url_path='/blog/static')
@@ -30,7 +30,7 @@ def about():
     return render_template('blog/index.html', pagination=pagination, posts=posts)
 
 
-@blog_bp.route('/post/<int:post_id>')
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     page = request.args.get('page', 1, type=int)
@@ -38,7 +38,44 @@ def show_post(post_id):
     pagination = Comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(
         page, per_page)
     comments = pagination.items
-    return render_template('blog/post.html', post=post, pagination=pagination, comments=comments)
+
+    form = CommentForm()
+
+    if current_user.is_authenticated:
+        form = AdminCommentForm()
+        form.author.data = current_user.name
+        form.email.data = current_app.config['BLUELOG_EMAIL']
+        form.site.data = url_for('.index')
+        from_admin = True
+        reviewed = True
+    else:
+        form = CommentForm()
+        from_admin = False
+        reviewed = False
+
+    if form.validate_on_submit():
+        author = form.author.data
+        email = form.email.data
+        site = form.site.data
+        body = form.body.data
+        comment = Comment(
+            author=author, email=email, site=site, body=body,
+            from_admin=from_admin, post=post, reviewed=reviewed)
+        replied_id = request.args.get('reply')
+        if replied_id:
+            replied_comment = Comment.query.get_or_404(replied_id)
+            comment.replied = replied_comment
+            send_new_reply_email(replied_comment)
+        db.session.add(comment)
+        db.session.commit()
+        if current_user.is_authenticated:  # send message based on authentication status
+            flash('Comment published.', 'success')
+        else:
+            flash('Thanks, your comment will be published after reviewed.', 'info')
+            send_new_comment_email(post)  # send notification email to admin
+        return redirect(url_for('.show_post', post_id=post_id))
+
+    return render_template('blog/post.html', post=post, pagination=pagination, comments=comments, form=form)
 
 
 @blog_bp.route('/post/delete/<int:post_id>', methods=['POST'])
