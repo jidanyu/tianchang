@@ -4,7 +4,7 @@ import requests
 import datetime
 
 # 抢券的时间
-scheduled_time = "2019-11-13 13:39"
+scheduled_time = "2019-11-21 18:00"
 # 券的URL
 requestUrls = ["https://api.m.jd.com/client.action?functionId=newBabelAwardCollection&body=%7B%22activityId%22%3A%223KyrVmpGvsiQevJ6qhB1U26gXeh9%22%2C%22scene%22%3A%221%22%2C%22args%22%3A%22key%3DBC82F8A182BB1680FB716E88BE8AEC01C2B9929DAE0DF52E8A656B69752C41BB0221EAD203D3B18D858B9D425DDF603A_babel%2CroleId%3D785D22509ADAECFF5EB69C0303537611_babel%22%2C%22eid%22%3A%222COBKBP5GC6TCE3USTVD2U2SPIQJA5XOUMBWDHKHREXERM7ZQOBGIS2CH5YIGN3SM6VRSLDXFZDIC5UEEJY55RBAYE%22%2C%22fp%22%3A%2275b447e7bf072ad1bb6c2513d2acfff0%22%2C%22pageClick%22%3A%22Babel_Coupon%22%2C%22mitemAddrId%22%3A%22%22%2C%22geo%22%3A%7B%22lng%22%3A%22%22%2C%22lat%22%3A%22%22%7D%7D&screen=750*1334&client=wh5&clientVersion=1.0.0&sid=&uuid=&area=&loginType=3&callback=jsonp5"]
 # 券的Referer
@@ -35,14 +35,14 @@ def getCoupon():
     while (True):
         # 当前时间
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+
         # 如果到预定时间就开始发送请求，然后打印结果
-        # if now == scheduled_time:
-        for i in range(len(requestUrls)):
-            session.headers['Referer'] = referers[i]
-            response = session.get(requestUrls[i])
-            # response.encoding = 'utf-8'
-            print(response.text)
-        break
+        if now == scheduled_time:
+            for i in range(len(requestUrls)):
+                session.headers['Referer'] = referers[i]
+                r = session.get(requestUrls[i])
+                print(r.text)
+            break
 
 
 if __name__ == '__main__':
